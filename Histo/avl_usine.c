@@ -88,31 +88,92 @@ AVL_Node_Usine_t *rotate_left(AVL_Node_Usine_t *x) {
 
     return y;
 }
-// Fichier : avl_usine.c
 
-/**
- * @brief Recherche rapide d'un nœud Usine par son ID (clé).
- * @param root La racine du sous-arbre actuel.
- * @param id_usine L'identifiant à rechercher.
- * @return Pointeur vers le nœud Usine trouvé, ou NULL si non trouvé.
- */
 AVL_Node_Usine_t *search_usine(AVL_Node_Usine_t *root, const char *id_usine) {
     
-    // Sécurité/Condition d'arrêt : Si la racine est NULL ou l'ID correspond.
-    // L'identifiant du nœud est la clé de recherche.
+   
     if (root == NULL || strcmp(id_usine, root->id) == 0) {
         return root;
     }
 
-    // Si l'ID cherché est lexicographiquement plus petit 
+    
     if (strcmp(id_usine, root->id) < 0) {
-        // Descendre à gauche
+        
         return search_usine(root->left, id_usine);
     } 
     
-    // Si l'ID cherché est plus grand
+    
     else {
-        // Descendre à droite
+        
         return search_usine(root->right, id_usine);
     }
+}
+
+void free_usine_avl(AVL_Node_Usine_t *root) {
+    
+    if (root == NULL) {
+        return;
+    }
+    
+    
+    free_usine_avl(root->left);
+    free_usine_avl(root->right);
+    
+   
+    free(root);
+}
+
+AVL_Node_Usine_t *insert_usine(AVL_Node_Usine_t *node, const char *id_usine) {
+    
+    
+    if (node == NULL) {
+        
+        return new_usine_node(id_usine);
+    }
+
+    int cmp_result = strcmp(id_usine, node->id);
+
+    if (cmp_result < 0) {
+        
+        node->left = insert_usine(node->left, id_usine);
+    } 
+    else if (cmp_result > 0) {
+        
+        node->right = insert_usine(node->right, id_usine);
+    } 
+    else {
+        
+        return node; 
+    }
+
+    
+    node->height = 1 + max(get_height(node->left), get_height(node->right));
+
+   
+    int balance = get_balance(node); 
+    
+    
+    if (balance < -1 && get_balance(node->left) <= 0) {
+        return rotate_right(node);
+    }
+
+    
+    if (balance > 1 && get_balance(node->right) >= 0) {
+        return rotate_left(node);
+    }
+
+    
+    if (balance < -1 && get_balance(node->left) > 0) {
+        node->left = rotate_left(node->left); 
+        return rotate_right(node);           
+    }
+
+    
+    if (balance > 1 && get_balance(node->right) < 0) {
+        node->right = rotate_right(node->right); 
+        return rotate_left(node);                
+    }
+
+    
+    return node;
 }
