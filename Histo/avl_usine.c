@@ -1,48 +1,90 @@
-/**
- * @brief Effectue une rotation droite (pour déséquilibre de type LL ou LR).
- * @param y Le nœud déséquilibré.
- * @return La nouvelle racine du sous-arbre après rotation (x).
- */
+#include "avl_usine.h" 
+
+int get_height(AVL_Node_Usine_t *node) {
+    if (node == NULL)
+        return 0;
+    return node->height;
+}
+
+
+AVL_Node_Usine_t *new_usine_node(const char *id_usine) {
+    AVL_Node_Usine_t *node = (AVL_Node_Usine_t *)malloc(sizeof(AVL_Node_Usine_t));
+    
+    if (node == NULL) {
+        perror("Erreur: Allocation mémoire pour l'AVL a échoué");
+        exit(EXIT_FAILURE); 
+    }
+
+   
+    strncpy(node->id, id_usine, MAX_ID_LEN - 1);
+    node->id[MAX_ID_LEN - 1] = '\0'; 
+    
+    node->max_capacity = 0;
+    node->total_captured = 0;
+    node->real_treated = 0;
+    
+    node->left = NULL;
+    node->right = NULL;
+    node->height = 1; 
+
+    return node;
+}
+
+
+int get_balance(AVL_Node_Usine_t *node) {
+    if (node == NULL)
+        return 0;
+    
+    
+    return get_height(node->right) - get_height(node->left); 
+}
+
+
+
+
+
+
 AVL_Node_Usine_t *rotate_right(AVL_Node_Usine_t *y) {
-    // 1. Définir les pointeurs
+    
+    
+    if (y == NULL || y->left == NULL) {
+        
+        return y;
+    }
+    
+    
     AVL_Node_Usine_t *x = y->left;
-    AVL_Node_Usine_t *a = x->right; // 'a' est l'ancien T2 (le sous-arbre de transition)
-
-    // 2. Effectuer la rotation
+    AVL_Node_Usine_t *a = x->right; 
     x->right = y;
-    y->left = a; // Remplacer T2 par a
+    y->left = a;
 
-    // 3. Mettre à jour les hauteurs (de bas en haut)
-    // get_height est nécessaire ici (doit être implémentée dans avl_usine.c)
-    y->height = 1 + max(get_height(y->left), 
-    get_height(y->right));
-    x->height = 1 + max(get_height(x->left), 
-    get_height(x->right));
+    
+    y->height = 1 + max(get_height(y->left),get_height(y->right));
+    
+    x->height = 1 + max(get_height(x->left),get_height(x->right));
 
-    // x devient la nouvelle racine
+    
     return x;
 }
-/**
- * @brief Effectue une rotation gauche (pour déséquilibre de type RR ou RL).
- * @param x Le nœud déséquilibré.
- * @return La nouvelle racine du sous-arbre après rotation (y).
- */
+
 AVL_Node_Usine_t *rotate_left(AVL_Node_Usine_t *x) {
-    // 1. Définir les pointeurs
+    
+
+    if (x == NULL || x->right == NULL) {
+        return x; 
+    }
+    
+    
     AVL_Node_Usine_t *y = x->right;
-    AVL_Node_Usine_t *a = y->left; // 'a' est l'ancien T2 (le sous-arbre de transition)
+    AVL_Node_Usine_t *a = y->left; 
 
-    // 2. Effectuer la rotation
+    
     y->left = x;
-    x->right = a; // Remplacer T2 par a
+    x->right = a; 
 
-    // 3. Mettre à jour les hauteurs (de bas en haut)
-    // get_height est nécessaire ici (doit être implémentée dans avl_usine.c)
-    x->height = 1 + max(get_height(x->left), 
-    get_height(x->right));
-    y->height = 1 + max(get_height(y->left), 
-    get_height(y->right));
+    x->height = 1 + max(get_height(x->left),get_height(x->right));
+                        
+    y->height = 1 + max(get_height(y->left),get_height(y->right));
 
-    // y devient la nouvelle racine
     return y;
 }
