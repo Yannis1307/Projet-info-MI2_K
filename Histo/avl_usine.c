@@ -88,3 +88,31 @@ AVL_Node_Usine_t *rotate_left(AVL_Node_Usine_t *x) {
 
     return y;
 }
+// Fichier : avl_usine.c
+
+/**
+ * @brief Recherche rapide d'un nœud Usine par son ID (clé).
+ * @param root La racine du sous-arbre actuel.
+ * @param id_usine L'identifiant à rechercher.
+ * @return Pointeur vers le nœud Usine trouvé, ou NULL si non trouvé.
+ */
+AVL_Node_Usine_t *search_usine(AVL_Node_Usine_t *root, const char *id_usine) {
+    
+    // Sécurité/Condition d'arrêt : Si la racine est NULL ou l'ID correspond.
+    // L'identifiant du nœud est la clé de recherche.
+    if (root == NULL || strcmp(id_usine, root->id) == 0) {
+        return root;
+    }
+
+    // Si l'ID cherché est lexicographiquement plus petit 
+    if (strcmp(id_usine, root->id) < 0) {
+        // Descendre à gauche
+        return search_usine(root->left, id_usine);
+    } 
+    
+    // Si l'ID cherché est plus grand
+    else {
+        // Descendre à droite
+        return search_usine(root->right, id_usine);
+    }
+}
