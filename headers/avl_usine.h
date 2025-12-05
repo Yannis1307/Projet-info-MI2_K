@@ -24,3 +24,4 @@ AVL_Node_Usine_t *rotate_left(AVL_Node_Usine_t *x);
 AVL_Node_Usine_t *search_usine(AVL_Node_Usine_t *root, const char *id_usine);
 // Note : insert_usine est la plus complexe, car elle gère la récursivité et l'équilibrage
 AVL_Node_Usine_t *insert_usine(AVL_Node_Usine_t *node, const char *id_usine);
+#endif
