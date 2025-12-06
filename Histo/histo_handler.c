@@ -78,10 +78,6 @@ static void traverse_and_write(AVL_Node_Usine_t *node, FILE *fp, const char *mod
 
     // 2. Traitement du Nœud courant
     if (strcmp(mode, "max") == 0) {
-        // Format : identifier;max volume
-        // Unité : milliers de m3 (déjà stocké tel quel d'après le parsing ?)
-        // Note: Le sujet demande k.m3. Si vos données sont en m3, il faudrait diviser par 1000.
-        // Si les données entrantes sont déjà en k.m3 (ce qui semble être le cas du CSV), on affiche direct.
         if (node->max_capacity > 0) { 
              fprintf(fp, "%s;%lld\n", node->id, node->max_capacity);
         }
@@ -93,8 +89,8 @@ static void traverse_and_write(AVL_Node_Usine_t *node, FILE *fp, const char *mod
         }
     } 
     else if (strcmp(mode, "real") == 0) {
-        // Format : identifier;real volume
-        // Le calcul effectué lors du parsing est : V_{reel} = V_{capte} \times (1 - P_{fuite})
+        
+       
         if (node->real_treated > 0) {
             fprintf(fp, "%s;%lld\n", node->id, node->real_treated);
         }
@@ -108,7 +104,7 @@ int write_histo_results(AVL_Node_Usine_t *root, const char *mode) {
     char filename[64];
     FILE *fp;
 
-    // Détermination du nom de fichier selon le mode (conforme au sujet ou libre tant que distinct)
+    // Détermination du nom de fichier selon le mode 
     if (strcmp(mode, "max") == 0) {
         sprintf(filename, "vol_max.dat");
     } else if (strcmp(mode, "src") == 0) {
@@ -126,8 +122,6 @@ int write_histo_results(AVL_Node_Usine_t *root, const char *mode) {
         return 1;
     }
 
-    // Écriture de l'en-tête (Optionnel mais recommandé par le sujet [cite: 178])
-    // "identifier / max volume ... / source volume ... / real volume"
     if (strcmp(mode, "max") == 0) fprintf(fp, "identifier;max volume (k.m3)\n");
     else if (strcmp(mode, "src") == 0) fprintf(fp, "identifier;source volume (k.m3)\n");
     else if (strcmp(mode, "real") == 0) fprintf(fp, "identifier;real volume (k.m3)\n");
