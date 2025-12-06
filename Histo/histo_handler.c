@@ -6,7 +6,9 @@
 // Fonction d'aide pour insérer/rechercher l'usine et mettre à jour ses volumes.
 // Note: Cette fonction simplifie la logique d'accumulation dans la boucle principale.
 static int update_usine_metrics(AVL_Node_Usine_t **root, Troncon_CSV_t *troncon) {
-    
+    if (troncon->usine_id[0] != '\0') {
+        return 0; 
+    }
     AVL_Node_Usine_t *usine = NULL;
     const char *usine_id_key = NULL;
 
