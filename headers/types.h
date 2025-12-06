@@ -10,7 +10,7 @@ typedef struct AVL_Node_Usine {
     struct AVL_Node_Usine *right;
     int height;
 } AVL_Node_Usine_t;
-#define MAX_ID_LEN 32  // Longueur suffisante pour les identifiants (ex: "Facility complex #RH400057F")
+
 
 
 typedef enum {
