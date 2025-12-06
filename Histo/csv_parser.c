@@ -1,3 +1,5 @@
+#include "csv_parser.h"
+
 // Aide à la conversion numérique.
 float parse_float(const char *token) {
     // Vérifie si le token est NULL ou le tiret de valeur manquante
