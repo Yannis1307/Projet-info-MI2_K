@@ -68,6 +68,77 @@ static int update_usine_metrics(AVL_Node_Usine_t **root, Troncon_CSV_t *troncon)
     return 0;
 }
 
+static void traverse_and_write(AVL_Node_Usine_t *node, FILE *fp, const char *mode) {
+    if (node == NULL) {
+        return;
+    }
+
+    // 1. D'abord le sous-arbre DROIT (pour l'ordre décroissant/inverse)
+    traverse_and_write(node->right, fp, mode);
+
+    // 2. Traitement du Nœud courant
+    if (strcmp(mode, "max") == 0) {
+        // Format : identifier;max volume
+        // Unité : milliers de m3 (déjà stocké tel quel d'après le parsing ?)
+        // Note: Le sujet demande k.m3. Si vos données sont en m3, il faudrait diviser par 1000.
+        // Si les données entrantes sont déjà en k.m3 (ce qui semble être le cas du CSV), on affiche direct.
+        if (node->max_capacity > 0) { 
+             fprintf(fp, "%s;%lld\n", node->id, node->max_capacity);
+        }
+    } 
+    else if (strcmp(mode, "src") == 0) {
+        // Format : identifier;source volume
+        if (node->total_captured > 0) {
+            fprintf(fp, "%s;%lld\n", node->id, node->total_captured);
+        }
+    } 
+    else if (strcmp(mode, "real") == 0) {
+        // Format : identifier;real volume
+        // Le calcul effectué lors du parsing est : V_{reel} = V_{capte} \times (1 - P_{fuite})
+        if (node->real_treated > 0) {
+            fprintf(fp, "%s;%lld\n", node->id, node->real_treated);
+        }
+    }
+
+    // 3. Ensuite le sous-arbre GAUCHE
+    traverse_and_write(node->left, fp, mode);
+}
+
+int write_histo_results(AVL_Node_Usine_t *root, const char *mode) {
+    char filename[64];
+    FILE *fp;
+
+    // Détermination du nom de fichier selon le mode (conforme au sujet ou libre tant que distinct)
+    if (strcmp(mode, "max") == 0) {
+        sprintf(filename, "vol_max.dat");
+    } else if (strcmp(mode, "src") == 0) {
+        sprintf(filename, "vol_captation.dat");
+    } else if (strcmp(mode, "real") == 0) {
+        sprintf(filename, "vol_traitement.dat");
+    } else {
+        fprintf(stderr, "Erreur: Mode '%s' inconnu pour l'écriture.\n", mode);
+        return 1;
+    }
+
+    fp = fopen(filename, "w");
+    if (fp == NULL) {
+        perror("Erreur lors de la création du fichier de sortie");
+        return 1;
+    }
+
+    // Écriture de l'en-tête (Optionnel mais recommandé par le sujet [cite: 178])
+    // "identifier / max volume ... / source volume ... / real volume"
+    if (strcmp(mode, "max") == 0) fprintf(fp, "identifier;max volume (k.m3)\n");
+    else if (strcmp(mode, "src") == 0) fprintf(fp, "identifier;source volume (k.m3)\n");
+    else if (strcmp(mode, "real") == 0) fprintf(fp, "identifier;real volume (k.m3)\n");
+
+    // Lancement du parcours récursif
+    traverse_and_write(root, fp, mode);
+
+    fclose(fp);
+    printf("Fichier '%s' généré avec succès.\n", filename);
+    return 0;
+}
 
 int handle_histo_data(const char *mode, const char *data_filename) {
     FILE *file;
