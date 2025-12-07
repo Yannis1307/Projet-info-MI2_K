@@ -1,61 +1,62 @@
 #!/bin/bash
 
-# 1. Vérification globale (TD 09 Ex 1.3 et 3.2)
+# 1. Vérification des arguments (TD 09)
 if [ $# -lt 1 ]; then
     echo "Erreur : pas assez d'arguments"
     echo "Usage : $0 histo [max|src|real] <fichier_csv>"
     echo "Usage : $0 leaks \"<id_usine>\" <fichier_csv>"
-    exit 1 # Code d'erreur (TD 09 Ex 3.4)
+    exit 1
 fi
 
 cmd="$1"
 
-# 2. Aiguillage
+# 2. Aiguillage et Filtrage (TD 08)
+
 if [ "$cmd" = "histo" ]; then
-    # histo <mode> <csv> -> Il faut donc 3 arguments au total ($1, $2, $3)
     if [ $# -ne 3 ]; then
-        echo "Erreur : histo attend 2 arguments après la commande : [max|src|real] <fichier_csv>"
+        echo "Erreur : histo attend 2 arguments : [max|src|real] <fichier_csv>"
         exit 1
     fi
-
-    # On utilise directement $2 et $3 au lieu de décaler
     mode="$2"
     csv="$3"
 
-    # Vérification du mode (TD 09 Ex 3)
+    # Vérification mode
     if [ "$mode" != "max" ] && [ "$mode" != "src" ] && [ "$mode" != "real" ]; then
-        echo "Erreur : mode invalide pour histo : $mode"
-        echo "Modes possibles : max, src, real"
+        echo "Erreur : mode invalide"
         exit 1
     fi
 
     echo "--- MODE HISTOGRAMME ---"
-    echo "Mode : $mode"
-    echo "Fichier : $csv"
     
-    # Appel futur (commenté)
-    # ./wildwater "$cmd" "$mode" "$csv"
+    
+    # Pour l'instant, on laisse l'appel commenté en attendant le programme C :
+    # grep -E "Facility|Spring" "$csv" | ./wildwater "histo" "$mode" - > "histo_$mode.dat"
+    
+    # On lance gnuplot 
+    # gnuplot -e "inputname='histo_$mode.dat'; outputname='histo_$mode.png'" shell/histo.gnu
+
+    echo "Commande prête (filtrage configuré)."
+
 
 elif [ "$cmd" = "leaks" ]; then
-    # leaks <id> <csv> -> Il faut aussi 3 arguments au total
     if [ $# -ne 3 ]; then
-        echo "Erreur : leaks attend 2 arguments après la commande : \"<id_usine>\" <fichier_csv>"
+        echo "Erreur : leaks attend 2 arguments..."
         exit 1
     fi
-
     facility="$2"
     csv="$3"
 
     echo "--- MODE FUITES ---"
-    echo "Usine : $facility"
-    echo "Fichier : $csv"
 
-    # Appel futur (commenté)
-    # ./wildwater "$cmd" "$facility" "$csv"
+    # APPEL AU PROGRAMME C AVEC FILTRAGE (TD 08)
+    # On filtre uniquement l'usine demandée ($facility)
+    
+    # Pour l'instant, on laisse l'appel commenté :
+    # grep "$facility" "$csv" | ./wildwater "leaks" "$facility" - > "leaks.dat"
+    
+    echo "Commande prête (filtrage configuré sur $facility)."
 
 else
     echo "Erreur : commande inconnue : $cmd"
     exit 1
 fi
-
-# Note : Le sujet demande d'afficher la durée à la fin (Page 9), on verra ça plus tard.
