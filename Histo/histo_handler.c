@@ -5,10 +5,8 @@
 
 // Fonction d'aide pour insérer/rechercher l'usine et mettre à jour ses volumes.
 // Note: Cette fonction simplifie la logique d'accumulation dans la boucle principale.
-static int update_usine_metrics(AVL_Node_Usine_t **root, Troncon_CSV_t *troncon) {
-    if (troncon->usine_id[0] != '\0') {
-        return 0; 
-    }
+int update_usine_metrics(AVL_Node_Usine_t **root, Troncon_CSV_t *troncon) {
+    
     AVL_Node_Usine_t *usine = NULL;
     const char *usine_id_key = NULL;
 
@@ -70,78 +68,63 @@ static int update_usine_metrics(AVL_Node_Usine_t **root, Troncon_CSV_t *troncon)
     return 0;
 }
 
-static void traverse_and_write(AVL_Node_Usine_t *node, FILE *fp, const char *mode) {
+
+
+void traverse_and_write(AVL_Node_Usine_t *node, FILE *fp, const char *mode) {
     if (node == NULL) {
         return;
     }
 
-    // 1. D'abord le sous-arbre DROIT (pour l'ordre décroissant/inverse)
+    // 1. Parcours à droite (pour ordre alphabétique inverse)
     traverse_and_write(node->right, fp, mode);
 
-    // 2. Traitement du Nœud courant
+    // 2. Traitement du Nœud courant : PAS DE VÉRIFICATION > 0
+    long long value_km3 = 0;
+
+    // Récupérer la valeur à afficher
     if (strcmp(mode, "max") == 0) {
-        if (node->max_capacity > 0) { 
-            double volume_Mm3 = (double)node->max_capacity / 1000.0;
-            fprintf(fp, "%s;%.3f\n", node->id, volume_Mm3);
-            
-        }
-    } 
-    else if (strcmp(mode, "src") == 0) {
-        // Format : identifier;source volume
-        if (node->total_captured > 0) {
-            double volume_Mm3 = (double)node->total_captured / 1000.0;
-            fprintf(fp, "%s;%.3f\n", node->id, volume_Mm3);
-           
-        }
-    } 
-    else if (strcmp(mode, "real") == 0) {
-        
-       
-        if (node->real_treated > 0) {
-            double volume_Mm3 = (double)node->real_treated / 1000.0;
-            fprintf(fp, "%s;%.3f\n", node->id, volume_Mm3);
-
-        }
+        value_km3 = node->max_capacity;
+    } else if (strcmp(mode, "src") == 0) {
+        value_km3 = node->total_captured;
+    } else if (strcmp(mode, "real") == 0) {
+        value_km3 = node->real_treated;
     }
+    
+    // Conversion critique : k.m3 -> M.m3
+    double volume_Mm3 = (double)value_km3 / 1000.0;
+    
+    // Écriture de la ligne de données (écrit toujours la ligne)
+    fprintf(fp, "%s;%.3f\n", node->id, volume_Mm3);
 
-    // 3. Ensuite le sous-arbre GAUCHE
+    // 3. Parcours à gauche
     traverse_and_write(node->left, fp, mode);
 }
 
+
 int write_histo_results(AVL_Node_Usine_t *root, const char *mode) {
-    char filename[64];
-    FILE *fp;
+    // Écrire directement vers la sortie standard (redirigée par le Shell)
+    FILE *fp = stdout; 
+    
+    // 1. Écriture de l'en-tête (M.m3)
+    fprintf(fp, "identifier;");
 
-    // Détermination du nom de fichier selon le mode 
     if (strcmp(mode, "max") == 0) {
-        sprintf(filename, "vol_max.dat");
+        fprintf(fp, "max volume (M.m3.year-1)\n"); // Unités corrigées
     } else if (strcmp(mode, "src") == 0) {
-        sprintf(filename, "vol_captation.dat");
+        fprintf(fp, "source volume (M.m3.year-1)\n"); // Unités corrigées
     } else if (strcmp(mode, "real") == 0) {
-        sprintf(filename, "vol_traitement.dat");
+        fprintf(fp, "real volume (M.m3.year-1)\n"); // Unités corrigées
     } else {
-        fprintf(stderr, "Erreur: Mode '%s' inconnu pour l'écriture.\n", mode);
+        fprintf(stderr, "Erreur: Mode d'histogramme invalide.\n");
         return 1;
     }
 
-    fp = fopen(filename, "w");
-    if (fp == NULL) {
-        perror("Erreur lors de la création du fichier de sortie");
-        return 1;
-    }
-
-    if (strcmp(mode, "max") == 0) fprintf(fp, "identifier;max volume (M.m3.year-1)\n");
-    else if (strcmp(mode, "src") == 0) fprintf(fp, "identifier;source volume (M.m3.year-1)\n");
-    else if (strcmp(mode, "real") == 0) fprintf(fp, "identifier;real volume (M.m3.year-1)\n");
-
-    // Lancement du parcours récursif
+    // 2. Parcours de l'AVL (utilise traverse_and_write corrigé ci-dessous)
     traverse_and_write(root, fp, mode);
 
-    fclose(fp);
-    printf("Fichier '%s' généré avec succès.\n", filename);
+    // Retour 0, le Shell gère le message de succès et la fermeture de stdout.
     return 0;
 }
-
 int handle_histo_data(const char *mode, const char *data_filename) {
     FILE *file;
     char line_buffer[MAX_LINE_LENGTH];
