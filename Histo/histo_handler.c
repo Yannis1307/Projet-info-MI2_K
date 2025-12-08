@@ -81,20 +81,26 @@ static void traverse_and_write(AVL_Node_Usine_t *node, FILE *fp, const char *mod
     // 2. Traitement du Nœud courant
     if (strcmp(mode, "max") == 0) {
         if (node->max_capacity > 0) { 
-             fprintf(fp, "%s;%lld\n", node->id, node->max_capacity);
+            double volume_Mm3 = (double)node->max_capacity / 1000.0;
+            fprintf(fp, "%s;%.3f\n", node->id, volume_Mm3);
+            
         }
     } 
     else if (strcmp(mode, "src") == 0) {
         // Format : identifier;source volume
         if (node->total_captured > 0) {
-            fprintf(fp, "%s;%lld\n", node->id, node->total_captured);
+            double volume_Mm3 = (double)node->total_captured / 1000.0;
+            fprintf(fp, "%s;%.3f\n", node->id, volume_Mm3);
+           
         }
     } 
     else if (strcmp(mode, "real") == 0) {
         
        
         if (node->real_treated > 0) {
-            fprintf(fp, "%s;%lld\n", node->id, node->real_treated);
+            double volume_Mm3 = (double)node->real_treated / 1000.0;
+            fprintf(fp, "%s;%.3f\n", node->id, volume_Mm3);
+
         }
     }
 
@@ -124,9 +130,9 @@ int write_histo_results(AVL_Node_Usine_t *root, const char *mode) {
         return 1;
     }
 
-    if (strcmp(mode, "max") == 0) fprintf(fp, "identifier;max volume (k.m3)\n");
-    else if (strcmp(mode, "src") == 0) fprintf(fp, "identifier;source volume (k.m3)\n");
-    else if (strcmp(mode, "real") == 0) fprintf(fp, "identifier;real volume (k.m3)\n");
+    if (strcmp(mode, "max") == 0) fprintf(fp, "identifier;max volume (M.m3.year-1)\n");
+    else if (strcmp(mode, "src") == 0) fprintf(fp, "identifier;source volume (M.m3.year-1)\n");
+    else if (strcmp(mode, "real") == 0) fprintf(fp, "identifier;real volume (M.m3.year-1)\n");
 
     // Lancement du parcours récursif
     traverse_and_write(root, fp, mode);
