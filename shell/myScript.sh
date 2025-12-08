@@ -6,12 +6,11 @@ start_time=$(date +%s)
 # Nom de l'exécutable
 executable="./wildwater"
 
-# --- 2. Vérification de l'exécutable (Sujet Page 9) ---
+# --- 2. Vérification de l'exécutable ---
 if [ ! -x "$executable" ]; then
     echo "Attention : L'exécutable $executable est introuvable."
     echo "Tentative de compilation..."
     make
-    # On revérifie après la compilation
     if [ ! -x "$executable" ]; then
         echo "Erreur fatale : Impossible de compiler ou de trouver wildwater."
         exit 1
@@ -19,7 +18,7 @@ if [ ! -x "$executable" ]; then
     echo "Compilation réussie."
 fi
 
-# --- 3. Vérification des arguments (TD 09) ---
+# --- 3. Vérification des arguments (Conforme TD 09) ---
 if [ $# -lt 1 ]; then
     echo "Erreur : pas assez d'arguments"
     echo "Usage : $0 histo [max|src|real] <fichier_csv>"
@@ -32,7 +31,7 @@ cmd="$1"
 # --- 4. Aiguillage et Traitement ---
 
 if [ "$cmd" = "histo" ]; then
-    # Vérification arguments spécifiques histo
+    # Vérification arguments
     if [ $# -ne 3 ]; then
         echo "Erreur : histo attend 2 arguments : [max|src|real] <fichier_csv>"
         exit 1
@@ -40,7 +39,7 @@ if [ "$cmd" = "histo" ]; then
     mode="$2"
     csv="$3"
 
-    # Vérification fichier CSV existe
+    # Vérification fichier
     if [ ! -f "$csv" ]; then
         echo "Erreur : Le fichier $csv n'existe pas."
         exit 1
@@ -54,26 +53,29 @@ if [ "$cmd" = "histo" ]; then
 
     echo "--- MODE HISTOGRAMME ---"
     
-    # Appel filtré (Optimisation TD 08)
-    # On filtre (grep) puis on envoie au programme C via le pipe (|)
-    # Le tiret (-) dit au C de lire l'entrée standard
+    # NOUVELLE CONSIGNE : Filtrage avec AWK (Colonne 5 vide ou "-")
+    # NR>1 : On ignore la première ligne (en-tête)
+    # $5 : On regarde la 5ème colonne
+    # Le tiret "-" final dit au programme C de lire l'entrée standard (le pipe)
     
-    # COMMANDE (À décommenter quand le C sera prêt) :
-    # grep -E "Facility|Spring" "$csv" | $executable "histo" "$mode" - > "histo_$mode.dat"
+    awk -F";" 'NR>1 && ($5=="-" || $5=="") {print $0}' "$csv" | $executable "histo" "$mode" - > "histo_$mode.dat"
     
-    # Vérification du code retour du C (Sujet Page 9)
+    # Vérification retour C
     if [ $? -ne 0 ]; then
         echo "Erreur lors de l'exécution du programme C."
         exit 1
     fi
 
-    # Génération Graphique (À décommenter plus tard)
-    # gnuplot -e "inputname='histo_$mode.dat'; outputname='histo_$mode.png'" shell/histo.gnu
+    # Génération Graphique (Si le .gnu existe et que le C a généré des données)
+    if [ -f "shell/histo.gnu" ] && [ -s "histo_$mode.dat" ]; then
+        gnuplot -e "inputname='histo_$mode.dat'; outputname='histo_$mode.png'" shell/histo.gnu
+        echo "Graphique généré : histo_$mode.png"
+    fi
     
     echo "Traitement Histo terminé."
 
 elif [ "$cmd" = "leaks" ]; then
-    # Vérification arguments spécifiques leaks
+    # Vérification arguments
     if [ $# -ne 3 ]; then
         echo "Erreur : leaks attend 2 arguments : \"<id_usine>\" <fichier_csv>"
         exit 1
@@ -81,7 +83,6 @@ elif [ "$cmd" = "leaks" ]; then
     facility="$2"
     csv="$3"
 
-    # Vérification fichier CSV existe
     if [ ! -f "$csv" ]; then
         echo "Erreur : Le fichier $csv n'existe pas."
         exit 1
@@ -89,26 +90,27 @@ elif [ "$cmd" = "leaks" ]; then
 
     echo "--- MODE FUITES ---"
 
-    # Appel filtré (Optimisation TD 08)
-    # On ne garde que les lignes de l'usine concernée
+    # NOUVELLE CONSIGNE : Filtrage précis Colonne 3 (ID) et 5 (Fuites)
+    # -v id="$facility" : On passe l'argument bash à awk
+    # $3==id : La colonne 3 doit correspondre à l'usine
+    # $5!="-" && $5!="" : La colonne 5 ne doit pas être vide (car on cherche les fuites)
     
-    # COMMANDE (À décommenter quand le C sera prêt) :
-    # grep "$facility" "$csv" | $executable "leaks" "$facility" - > "leaks.dat"
+    awk -F";" -v id="$facility" 'NR>1 && $3==id && $5!="-" && $5!="" {print $0}' "$csv" | $executable "leaks" "$facility" - > "leaks.dat"
 
-    # Vérification du code retour du C
+    # Vérification retour C
     if [ $? -ne 0 ]; then
         echo "Erreur lors de l'exécution du programme C."
         exit 1
     fi
 
-    echo "Traitement Leaks terminé."
+    echo "Traitement Leaks terminé. Fichier : leaks.dat"
 
 else
     echo "Erreur : commande inconnue : $cmd"
     exit 1
 fi
 
-# --- 5. Chronométrage : Fin et Affichage (Sujet Page 9) ---
+# --- 5. Chronométrage : Fin ---
 end_time=$(date +%s)
 duration=$((end_time - start_time))
 echo "Durée totale du traitement : $duration secondes."
