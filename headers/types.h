@@ -1,3 +1,5 @@
+#ifndef TYPES_H   // <--- AJOUT OBLIGATOIRE
+#define TYPES_H
 #define MAX_ID_LEN 32
 typedef struct AVL_Node_Usine {
     char id[MAX_ID_LEN];            
@@ -36,3 +38,4 @@ typedef struct {
     
     LineType_e type;                 // Le type de tronçon identifié
 } Troncon_CSV_t;
+#endif 
