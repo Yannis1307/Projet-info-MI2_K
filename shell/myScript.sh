@@ -64,9 +64,38 @@ if [ "$cmd" = "histo" ]; then
     fi
 
     # Génération graphique
+    # --- TRAITEMENT ET GÉNÉRATION GRAPHIQUE (Min 50 / Max 10) ---
     if [ -f "shell/histo.gnu" ] && [ -s "histo_$mode.dat" ]; then
-        gnuplot -e "inputname='histo_$mode.dat'; outputname='histo_$mode.png'" shell/histo.gnu
-        echo "Graphique généré : histo_$mode.png"
+        
+        echo "Génération des fichiers triés pour les graphiques..."
+
+       
+        head -n 1 "histo_$mode.dat" > header.tmp
+
+       
+        cat header.tmp > "histo_${mode}_min50.dat"
+        tail -n +2 "histo_$mode.dat" | sort -t";" -k2,2n | head -n 50 >> "histo_${mode}_min50.dat"
+
+        #  Création du fichier pour les 10 plus GRANDES usines (max10)
+       
+        cat header.tmp > "histo_${mode}_max10.dat"
+        tail -n +2 "histo_$mode.dat" | sort -t";" -k2,2nr | head -n 10 >> "histo_${mode}_max10.dat"
+
+        # Génération des deux images avec Gnuplot
+        # 
+        
+       
+        gnuplot -e "inputname='histo_${mode}_min50.dat'; outputname='histo_${mode}_min50.png'; my_title='Histogramme : 50 plus petites usines ($mode)'" shell/histo.gnu
+        echo "Graphique généré : histo_${mode}_min50.png"
+
+       
+        gnuplot -e "inputname='histo_${mode}_max10.dat'; outputname='histo_${mode}_max10.png'; my_title='Histogramme : 10 plus grandes usines ($mode)'" shell/histo.gnu
+        echo "Graphique généré : histo_${mode}_max10.png"
+
+        # Nettoyage 
+        rm header.tmp
+    else
+        echo "Pas de données pour générer les graphiques."
     fi
     
     echo "Traitement Histo terminé."
