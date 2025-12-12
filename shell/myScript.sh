@@ -27,7 +27,7 @@ if [ $# -lt 1 ]; then
     exit 1
 fi
 
-cmd="$1"
+cmd="$2"
 
 # --- 4. Aiguillage et Traitement ---
 
@@ -36,8 +36,8 @@ if [ "$cmd" = "histo" ]; then
         echo "Erreur : histo attend 2 arguments : [max|src|real] <fichier_csv>"
         exit 1
     fi
-    mode="$2"
-    csv="$3"
+    mode="$3"
+    csv="$1"
 
     if [ ! -f "$csv" ]; then
         echo "Erreur : Le fichier $csv n'existe pas."
