@@ -24,7 +24,8 @@ set xtics rotate by -45 scale 0 font ",8"
 set bmargin 10
 
 # 5. Titre ,
-set title "Histogramme des Volumes par Usine" font ",14"
+if (!exists("my_title")) my_title='Histogramme des Volumes'
+set title my_title
 
 # 6. Commande de traçage
 # 'using 2:xtic(1)' : Utilise la colonne 2 pour la hauteur (Y) et la colonne 1 pour les noms (X)
