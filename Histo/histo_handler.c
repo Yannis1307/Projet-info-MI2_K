@@ -48,19 +48,19 @@ int update_usine_metrics(AVL_Node_Usine_t **root, Troncon_CSV_t *troncon) {
     } else if (troncon->type == TYPE_CAPTAGE) {
         // Accumuler les volumes captés et traités
         if (troncon->volume_or_capacity > 0) {
-            long long volume_capté = (long long)troncon->volume_or_capacity;
+            long long volume_capte = (long long)troncon->volume_or_capacity;
             
-            usine->total_captured += volume_capté;
+            usine->total_captured += volume_capte;
             
             // Calcul du volume réel traité après fuites (Tâche 151)
             // Fuites en % sont en Col 5
             if (troncon->leak_percentage >= 0) {
                 float fuite_percent = troncon->leak_percentage / 100.0f;
-                usine->real_treated += (long long)(volume_capté * (1.0f - fuite_percent));
+                usine->real_treated += (long long)(volume_capte * (1.0f - fuite_percent));
             } else {
                  // Si fuite_percentage est '-', on suppose 0% de perte ou on applique la règle spécifique du projet.
                  // Ici, on considère que si le pourcentage est inconnu, on prend le volume capté par défaut.
-                 usine->real_treated += volume_capté;
+                 usine->real_treated += volume_capte;
             }
         }
     }
@@ -102,7 +102,7 @@ void traverse_and_write(AVL_Node_Usine_t *node, FILE *fp, const char *mode) {
 
 
 int write_histo_results(AVL_Node_Usine_t *root, const char *mode) {
-    // Écrire directement vers la sortie standard (redirigée par le Shell)
+    
     FILE *fp = stdout; 
     
     // 1. Écriture de l'en-tête (M.m3)
