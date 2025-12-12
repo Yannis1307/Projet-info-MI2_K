@@ -51,9 +51,9 @@ if [ "$cmd" = "histo" ]; then
 
     echo "--- MODE HISTOGRAMME : $mode ---"
     
-    # CORRECTION DU FILTRE (Le point critique du rapport) :
+    # CORRECTION CRITIQUE (Validée par le rapport) :
     # On filtre sur la Colonne 1 ($1) qui doit être égale à "-"
-    # Cela capture : Les USINES ET les SOURCES
+    # Cela capture : Les USINES ET les SOURCES (Captages)
     
     awk -F";" '$1=="-" && NR>1 {print $0}' "$csv" | $executable "histo" "$mode" - > "histo_$mode.dat"
     
@@ -101,6 +101,6 @@ fi
 
 # --- 5. Chronométrage : Fin (Calcul en millisecondes) ---
 end_time=$(date +%s%N)
-# Calcul : (Fin - Début) / 1 000 000
+# Calcul : (Fin - Début) / 1 000 000 pour passer de nanosecondes à millisecondes
 duration=$(( (end_time - start_time) / 1000000 ))
 echo "Durée totale du traitement : $duration ms"
