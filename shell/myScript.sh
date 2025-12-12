@@ -107,7 +107,7 @@ elif [ "$cmd" = "leaks" ]; then
         exit 1
     fi
     
-    # CORRECTION ICI : L'ID est en $3, le fichier est déjà dans $csv ($1)
+    
     facility="$3"
 
     echo "--- MODE FUITES : $facility ---"
