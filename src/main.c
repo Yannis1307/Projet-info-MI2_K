@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <string.h>
-#include "histo_handler.h" 
+#include "../headers/histo_handler.h" 
 
 
 int main(int argc, char *argv[]) {
