@@ -74,8 +74,8 @@ elif [ "$cmd" = "leaks" ]; then
         echo "Erreur : leaks attend 2 arguments : \"<id_usine>\" <fichier_csv>"
         exit 1
     fi
-    facility="$2"
-    csv="$3"
+    facility="$3"
+    csv="$1"
 
     if [ ! -f "$csv" ]; then
         echo "Erreur : Le fichier $csv n'existe pas."
