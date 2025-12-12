@@ -28,9 +28,5 @@ if (!exists("my_title")) my_title='Histogramme des Volumes'
 set title my_title
 
 # 6. Commande de traçage
-# 'using 2:xtic(1)' : Utilise la colonne 2 pour la hauteur (Y) et la colonne 1 pour les noms (X)
-# 'every ::1' : IGNORE la première ligne (l'en-tête "identifier;max volume...")
-# 'notitle' : 
-# 'linecolor' : Couleur des barres (Bleu)
 
 plot inputname every ::1 using 2:xtic(1) notitle linecolor rgb "#0060ad"
