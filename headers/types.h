@@ -1,20 +1,39 @@
-#ifndef TYPES_H   // <--- AJOUT OBLIGATOIRE
+#ifndef TYPES_H
 #define TYPES_H
-#define MAX_ID_LEN 32
+
+#include <string.h>
+
+
+#define MAX_ID_LEN 64 
+
+//MODULE HISTO 
 typedef struct AVL_Node_Usine {
     char id[MAX_ID_LEN];            
     long long max_capacity;         
     long long total_captured;       
     long long real_treated;         
-    
-    
     struct AVL_Node_Usine *left;
     struct AVL_Node_Usine *right;
     int height;
 } AVL_Node_Usine_t;
 
+//MODULE LEAKS
+typedef struct AdjNode {
+    char dest_id[MAX_ID_LEN]; 
+    float leak_percentage;    
+    struct AdjNode *next;     
+} AdjNode_t;
 
+typedef struct Station_Node {
+    char id[MAX_ID_LEN];      
+    long long capacity;       
+    AdjNode_t *adj_head;      
+    struct Station_Node *left;
+    struct Station_Node *right;
+    int height;
+} Station_Node_t;
 
+//PARSING CSV
 typedef enum {
     TYPE_UNKNOWN = 0,
     TYPE_USINE,
@@ -26,16 +45,12 @@ typedef enum {
 } LineType_e;
 
 typedef struct {
-    
     char usine_id[MAX_ID_LEN];       
     char amont_id[MAX_ID_LEN];       
     char aval_id[MAX_ID_LEN];        
-    
-  
-    float volume_or_capacity;        // Col 4 (Volume capté ou Capacité, peut être '-'. Utiliser -1.0f si '-')
-    float leak_percentage;           // Col 5 (Pourcentage de fuite, peut être '-'. Utiliser -1.0f si '-')
-    
-    
-    LineType_e type;                 // Le type de tronçon identifié
+    float volume_or_capacity;        
+    float leak_percentage;           
+    LineType_e type;                 
 } Troncon_CSV_t;
-#endif 
+
+#endif
