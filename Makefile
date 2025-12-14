@@ -2,7 +2,7 @@ CC = gcc
 CFLAGS = -Wall -Wextra -g -Iheaders
 
 
-SRCS = src/main.c histo/histo_handler.c histo/avl_usine.c histo/csv_parser.c
+SRCS = src/main.c histo/histo_handler.c histo/avl_usine.c histo/csv_parser.c leaks/leaks_handler.c
 
 # Transformation .c -> .o
 OBJS = $(SRCS:.c=.o)
@@ -21,7 +21,7 @@ $(EXEC): $(OBJS)
 %.o: %.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
-# Cleaning
+# Clean
 clean:
 	rm -f $(OBJS) $(EXEC) *.dat *.png
 
