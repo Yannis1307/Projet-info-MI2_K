@@ -2,7 +2,7 @@ CC = gcc
 CFLAGS = -Wall -Wextra -g -Iheaders
 
 
-SRCS = src/main.c histo/histo_handler.c histo/avl_usine.c histo/csv_parser.c leaks/leaks_handler.c
+SRCS = src/main.c Histo/histo_handler.c Histo/avl_usine.c Histo/csv_parser.c Leaks/leaks_handler.c
 
 # Transformation .c -> .o
 OBJS = $(SRCS:.c=.o)
