@@ -1,9 +1,6 @@
 #include "histo_handler.h"
 #include "csv_parser.h" 
-
 #define BUFFER_SIZE 1024
-
-
 int update_usine_metrics(AVL_Node_Usine_t **root, Troncon_CSV_t *troncon) {
     AVL_Node_Usine_t *usine = NULL;
     const char *usine_id_key = NULL;
@@ -60,12 +57,9 @@ void traverse_and_write(AVL_Node_Usine_t *node, FILE *fp, const char *mode) {
     traverse_and_write(node->left, fp, mode);
 }
 
-
 int write_histo_results(AVL_Node_Usine_t *root, const char *mode) {
-    
     FILE *fp = stdout; 
     fprintf(fp, "identifier;");
-
     if (strcmp(mode, "max") == 0) {
         fprintf(fp, "max volume (M.m3.year-1)\n"); 
     } else if (strcmp(mode, "src") == 0) {
