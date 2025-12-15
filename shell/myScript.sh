@@ -33,12 +33,12 @@ if [ "$cmd" = "histo" ]; then
     fi
     mode="$3"
     
-    echo "--- MODE HISTOGRAMME : $mode ---"
+    echo "____MODE HISTOGRAMME : $mode ---"
 
     awk -F";" '$1=="-" {print $0}' "$csv" | $executable "histo" "$mode" - > "histo_$mode.dat"
     
     if [ $? -ne 0 ]; then
-        echo "Erreur lors de l'exécution Histo."
+        echo "Erreur de l'exécution Histo."
         exit 1
     fi
 
@@ -57,14 +57,14 @@ if [ "$cmd" = "histo" ]; then
         cat header.tmp > "histo_${mode}_max10.dat"
         tail -n +2 "histo_$mode.dat" | sort -t";" -k2,2nr | head -n 10 >> "histo_${mode}_max10.dat"
 
-        # Appel Gnuplot
+        # appel Gnuplot pour les 2 graphiques
         gnuplot -e "inputname='histo_${mode}_min50.dat'; outputname='histo_${mode}_min50.png'; my_title='Histogramme : 50 plus petites ($mode)'" shell/histo.gnu
         gnuplot -e "inputname='histo_${mode}_max10.dat'; outputname='histo_${mode}_max10.png'; my_title='Histogramme : 10 plus grandes ($mode)'" shell/histo.gnu
         
         rm -f header.tmp "histo_${mode}_min50.dat" "histo_${mode}_max10.dat"
         echo "Graphiques générés."
     fi
-    echo "Traitement Histo terminé."
+    echo "Traitement de l'histogramme terminé."
 
 # LEAKS
 elif [ "$cmd" = "leaks" ]; then
