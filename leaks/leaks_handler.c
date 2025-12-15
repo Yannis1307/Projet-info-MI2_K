@@ -5,8 +5,6 @@
 #include <math.h> 
 
 #define max(a, b) ((a > b) ? a : b)
-
-
 void trim_string(char *str) {
     if (str == NULL) return;
     int len = strlen(str);
@@ -27,9 +25,7 @@ void trim_string(char *str) {
         str[i] = '\0';
     }
 }
-
-// GESTION AVL 
-
+//Gestion avl
 Station_Node_t *new_station_node(const char *id) {
     Station_Node_t *node = (Station_Node_t *)malloc(sizeof(Station_Node_t));
     if (!node) {
@@ -45,7 +41,6 @@ Station_Node_t *new_station_node(const char *id) {
     node->height = 1;
     return node;
 }
-
 int get_station_height(Station_Node_t *n) { return (n == NULL) ? 0 : n->height; }
 int get_station_balance(Station_Node_t *n) { return (n == NULL) ? 0 : get_station_height(n->right) - get_station_height(n->left); }
 
