@@ -88,7 +88,7 @@ elif [ "$cmd" = "leaks" ]; then
         exit 1
     fi
 
-    # Lecture et Historique
+    #lecture et historique
     result=$(cat "leaks_output.tmp")
     rm -f "leaks_output.tmp"
 
@@ -108,7 +108,7 @@ else
     exit 1
 fi
 
-# Chrono
+# chronometre
 end_time=$(date +%s%N)
 duration=$(( (end_time - start_time) / 1000000 ))
 echo "Durée totale : $duration ms"
