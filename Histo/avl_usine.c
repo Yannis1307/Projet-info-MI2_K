@@ -24,8 +24,9 @@ AVL_Node_Usine_t *new_usine_node(const char *id_usine) {
     return node;
 }
 int get_balance(AVL_Node_Usine_t *node) {
-    if (node == NULL)
-        return 0;
+    if (node == NULL){
+    	return 0;
+    	}
         return get_height(node->right) - get_height(node->left); 
 }
 AVL_Node_Usine_t *rotate_right(AVL_Node_Usine_t *y) {
