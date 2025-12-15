@@ -6,7 +6,6 @@
 
 #define MAX_ID_LEN 64 
 
-//MODULE HISTO 
 typedef struct AVL_Node_Usine {
     char id[MAX_ID_LEN];            
     long long max_capacity;         
@@ -17,7 +16,7 @@ typedef struct AVL_Node_Usine {
     int height;
 } AVL_Node_Usine_t;
 
-//MODULE LEAKS
+
 typedef struct AdjNode {
     char dest_id[MAX_ID_LEN]; 
     float leak_percentage;    
@@ -33,7 +32,6 @@ typedef struct Station_Node {
     int height;
 } Station_Node_t;
 
-//PARSING CSV
 typedef enum {
     TYPE_UNKNOWN = 0,
     TYPE_USINE,
