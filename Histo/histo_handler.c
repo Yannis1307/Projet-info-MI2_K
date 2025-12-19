@@ -5,7 +5,7 @@
 
 int update_plant_metrics(AVL_Plant_Node_t **root, CSV_Section_t *section) {
     AVL_Plant_Node_t *plant = NULL;
-    const char *plant_id_key = NULL;
+    char *plant_id_key = NULL;
     
     if (section->type == TYPE_PLANT) {
         plant_id_key = section->upstream_id;
@@ -47,7 +47,7 @@ int update_plant_metrics(AVL_Plant_Node_t **root, CSV_Section_t *section) {
     return 0;
 }
 
-void traverse_and_write(AVL_Plant_Node_t *node, FILE *fp, const char *mode) {
+void traverse_and_write(AVL_Plant_Node_t *node, FILE *fp,char *mode) {
     if (node == NULL) {
         return;
     }
@@ -68,7 +68,7 @@ void traverse_and_write(AVL_Plant_Node_t *node, FILE *fp, const char *mode) {
     traverse_and_write(node->left, fp, mode);
 }
 
-int write_histo_results(AVL_Plant_Node_t *root, const char *mode) {
+int write_histo_results(AVL_Plant_Node_t *root,char *mode) {
     FILE *fp = stdout; 
     fprintf(fp, "identifier;");
     
@@ -87,7 +87,7 @@ int write_histo_results(AVL_Plant_Node_t *root, const char *mode) {
     return 0;
 }
 
-int handle_histo_data(const char *mode, const char *data_filename) {
+int handle_histo_data(char *mode,char *data_filename) {
     FILE *file;
     char line_buffer[MAX_LINE_LENGTH];
     AVL_Plant_Node_t *plant_root = NULL;
