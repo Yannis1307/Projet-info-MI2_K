@@ -30,7 +30,7 @@ void trim_string(char *str) {
 
 // AVL MANAGEMENT
 
-Station_Node_t *new_station_node(const char *id) {
+Station_Node_t *new_station_node(char *id) {
     Station_Node_t *node = (Station_Node_t *)malloc(sizeof(Station_Node_t));
     if (!node) {
         fprintf(stderr, "\nFatal Error: Out of memory (malloc failed).\n");
@@ -71,7 +71,7 @@ Station_Node_t *rotate_station_left(Station_Node_t *x) {
     return y;
 }
 
-Station_Node_t *insert_station(Station_Node_t *node, const char *id) {
+Station_Node_t *insert_station(Station_Node_t *node,char *id) {
     if (node == NULL) return new_station_node(id);
     
     int cmp = strcmp(id, node->id);
@@ -99,7 +99,7 @@ Station_Node_t *insert_station(Station_Node_t *node, const char *id) {
     return node;
 }
 
-Station_Node_t *search_station(Station_Node_t *root, const char *id) {
+Station_Node_t *search_station(Station_Node_t *root,char *id) {
     if (root == NULL) return NULL;
     int cmp = strcmp(id, root->id);
     if (cmp == 0) return root;
@@ -120,7 +120,7 @@ void free_station_graph(Station_Node_t *root) {
     free(root);
 }
 
-void add_pipe(Station_Node_t *station, const char *dest_id, float leak) {
+void add_pipe(Station_Node_t *station,char *dest_id, float leak) {
     if (station == NULL) return;
     AdjNode_t *new_adj = (AdjNode_t *)malloc(sizeof(AdjNode_t));
     if (!new_adj) {
@@ -174,7 +174,7 @@ double calculate_downstream_loss(Station_Node_t *root, Station_Node_t *current_n
 
 // MAIN HANDLER 
 
-int handle_leaks_data(const char *target_factory_id, const char *input_source) {
+int handle_leaks_data(char *target_factory_id,char *input_source) {
     FILE *file = (strcmp(input_source, "-") == 0) ? stdin : fopen(input_source, "r");
     if (!file) { perror("Error opening file"); return 1; }
 
