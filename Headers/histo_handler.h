@@ -6,7 +6,10 @@
 #include "types.h"
 #include "avl_plant.h" 
 
+// Main entry point for the 'histo' command logic
 int handle_histo_data(const char *mode, const char *data_filename);
+
+// Exports sorted statistics from the AVL tree to stdout
 int write_histo_results(AVL_Plant_Node_t *root, const char *mode);
 
 #endif
