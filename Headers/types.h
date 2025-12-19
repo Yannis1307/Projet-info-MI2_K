@@ -5,6 +5,7 @@
 
 #define MAX_ID_LEN 64 
 
+// Histogram Mode: AVL Node structure for station metrics
 typedef struct AVL_Plant_Node {
     char id[MAX_ID_LEN];            
     long long max_capacity;         
@@ -15,6 +16,7 @@ typedef struct AVL_Plant_Node {
     int height;
 } AVL_Plant_Node_t;
 
+// Leaks Mode: Graph structures (Adjacency List + AVL wrapper)
 typedef struct AdjNode {
     char dest_id[MAX_ID_LEN]; 
     float leak_percentage;    
@@ -30,6 +32,7 @@ typedef struct Station_Node {
     int height;
 } Station_Node_t;
 
+// CSV Parsing: Data types and temporary storage structure
 typedef enum {
     TYPE_UNKNOWN = 0,
     TYPE_PLANT,
@@ -45,8 +48,8 @@ typedef struct {
     char upstream_id[MAX_ID_LEN];       
     char downstream_id[MAX_ID_LEN];        
     float volume_or_capacity;        
-    float leak_percentage;           
-    LineType_e type;                 
+    float leak_percentage;            
+    LineType_e type;                  
 } CSV_Section_t;
 
 #endif
