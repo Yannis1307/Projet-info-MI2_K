@@ -8,7 +8,7 @@ Pour démarrer le programme, ouvrez un terminal de commande dans le dossier du p
 
 1. Compilation: Tapez `make` pour générer l'exécutable `wildwater`
 2. Lancement: Le programme est orchestré par un script Shell pour faciliter les filtres. Utilisez la commande:
-`./myScript.sh <fichier_csv> <commande> [options]`
+`./shell/myScript.sh <fichier_csv> <commande> [options]`
 
 🧩 Fonctionnalités du programme
 
