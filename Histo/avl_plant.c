@@ -6,7 +6,7 @@ int get_height(AVL_Plant_Node_t *node) {
     return node->height;
 }
 
-AVL_Plant_Node_t *new_plant_node(const char *plant_id) {
+AVL_Plant_Node_t *new_plant_node(char *plant_id) {
     AVL_Plant_Node_t *node = (AVL_Plant_Node_t *)malloc(sizeof(AVL_Plant_Node_t));
     if (node == NULL) {
         perror("Error: Memory allocation failed for AVL Node");
@@ -56,7 +56,7 @@ AVL_Plant_Node_t *rotate_left(AVL_Plant_Node_t *x) {
     return y;
 }
 
-AVL_Plant_Node_t *search_plant(AVL_Plant_Node_t *root, const char *plant_id) {
+AVL_Plant_Node_t *search_plant(AVL_Plant_Node_t *root,char *plant_id) {
     if (root == NULL || strcmp(plant_id, root->id) == 0) {
         return root;
     }
@@ -77,7 +77,7 @@ void free_plant_avl(AVL_Plant_Node_t *root) {
     free(root);
 }
 
-AVL_Plant_Node_t *insert_plant(AVL_Plant_Node_t *node, const char *plant_id) {
+AVL_Plant_Node_t *insert_plant(AVL_Plant_Node_t *node,char *plant_id) {
     if (node == NULL) {
         return new_plant_node(plant_id);
     }
