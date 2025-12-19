@@ -3,19 +3,17 @@
 
 #include <string.h>
 
-
 #define MAX_ID_LEN 64 
 
-typedef struct AVL_Node_Usine {
+typedef struct AVL_Plant_Node {
     char id[MAX_ID_LEN];            
     long long max_capacity;         
     long long total_captured;       
     long long real_treated;         
-    struct AVL_Node_Usine *left;
-    struct AVL_Node_Usine *right;
+    struct AVL_Plant_Node *left;
+    struct AVL_Plant_Node *right;
     int height;
-} AVL_Node_Usine_t;
-
+} AVL_Plant_Node_t;
 
 typedef struct AdjNode {
     char dest_id[MAX_ID_LEN]; 
@@ -34,21 +32,21 @@ typedef struct Station_Node {
 
 typedef enum {
     TYPE_UNKNOWN = 0,
-    TYPE_USINE,
-    TYPE_CAPTAGE,        
-    TYPE_STOCKAGE_ENTRANT, 
-    TYPE_DISTRIB_PRINC,  
-    TYPE_DISTRIB_SECON,  
-    TYPE_BRANCHEMENT     
+    TYPE_PLANT,
+    TYPE_INTAKE,        
+    TYPE_STORAGE_IN, 
+    TYPE_DISTRIB_MAIN,  
+    TYPE_DISTRIB_SEC,  
+    TYPE_BRANCHMENT     
 } LineType_e;
 
 typedef struct {
-    char usine_id[MAX_ID_LEN];       
-    char amont_id[MAX_ID_LEN];       
-    char aval_id[MAX_ID_LEN];        
+    char plant_id[MAX_ID_LEN];       
+    char upstream_id[MAX_ID_LEN];       
+    char downstream_id[MAX_ID_LEN];        
     float volume_or_capacity;        
     float leak_percentage;           
     LineType_e type;                 
-} Troncon_CSV_t;
+} CSV_Section_t;
 
 #endif
