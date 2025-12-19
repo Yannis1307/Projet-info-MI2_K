@@ -1,19 +1,18 @@
-#include "avl_usine.h" 
+#include "../headers/avl_plant.h" 
 
-int get_height(AVL_Node_Usine_t *node) {
+int get_height(AVL_Plant_Node_t *node) {
     if (node == NULL)
         return 0;
     return node->height;
 }
 
-
-AVL_Node_Usine_t *new_usine_node(const char *id_usine) {
-    AVL_Node_Usine_t *node = (AVL_Node_Usine_t *)malloc(sizeof(AVL_Node_Usine_t));
+AVL_Plant_Node_t *new_plant_node(const char *plant_id) {
+    AVL_Plant_Node_t *node = (AVL_Plant_Node_t *)malloc(sizeof(AVL_Plant_Node_t));
     if (node == NULL) {
-        perror("Erreur: Allocation mémoire pour l'AVL a échoué");
+        perror("Error: Memory allocation failed for AVL Node");
         exit(EXIT_FAILURE); 
     }
-    strncpy(node->id, id_usine, MAX_ID_LEN - 1);
+    strncpy(node->id, plant_id, MAX_ID_LEN - 1);
     node->id[MAX_ID_LEN - 1] = '\0'; 
     node->max_capacity = 0;
     node->total_captured = 0;
@@ -23,30 +22,33 @@ AVL_Node_Usine_t *new_usine_node(const char *id_usine) {
     node->height = 1; 
     return node;
 }
-int get_balance(AVL_Node_Usine_t *node) {
+
+int get_balance(AVL_Plant_Node_t *node) {
     if (node == NULL){
     	return 0;
-    	}
-        return get_height(node->right) - get_height(node->left); 
+    }
+    return get_height(node->right) - get_height(node->left); 
 }
-AVL_Node_Usine_t *rotate_right(AVL_Node_Usine_t *y) {
-       if (y == NULL || y->left == NULL) {
+
+AVL_Plant_Node_t *rotate_right(AVL_Plant_Node_t *y) {
+    if (y == NULL || y->left == NULL) {
         return y;
     }
-    AVL_Node_Usine_t *x = y->left;
-    AVL_Node_Usine_t *a = x->right; 
+    AVL_Plant_Node_t *x = y->left;
+    AVL_Plant_Node_t *a = x->right; 
     x->right = y;
     y->left = a;
     y->height = 1 + max(get_height(y->left),get_height(y->right));
     x->height = 1 + max(get_height(x->left),get_height(x->right));
     return x;
 }
-AVL_Node_Usine_t *rotate_left(AVL_Node_Usine_t *x) {
+
+AVL_Plant_Node_t *rotate_left(AVL_Plant_Node_t *x) {
     if (x == NULL || x->right == NULL) {
         return x; 
     }
-    AVL_Node_Usine_t *y = x->right;
-    AVL_Node_Usine_t *a = y->left; 
+    AVL_Plant_Node_t *y = x->right;
+    AVL_Plant_Node_t *a = y->left; 
     y->left = x;
     x->right = a; 
     x->height = 1 + max(get_height(x->left),get_height(x->right));                    
@@ -54,41 +56,45 @@ AVL_Node_Usine_t *rotate_left(AVL_Node_Usine_t *x) {
     return y;
 }
 
-AVL_Node_Usine_t *search_usine(AVL_Node_Usine_t *root, const char *id_usine) {
-    if (root == NULL || strcmp(id_usine, root->id) == 0) {
+AVL_Plant_Node_t *search_plant(AVL_Plant_Node_t *root, const char *plant_id) {
+    if (root == NULL || strcmp(plant_id, root->id) == 0) {
         return root;
     }
-    if (strcmp(id_usine, root->id) < 0) {   
-        return search_usine(root->left, id_usine);
+    if (strcmp(plant_id, root->id) < 0) {   
+        return search_plant(root->left, plant_id);
     } 
     else {  
-        return search_usine(root->right, id_usine);
+        return search_plant(root->right, plant_id);
     }
 }
-void free_usine_avl(AVL_Node_Usine_t *root) {   
+
+void free_plant_avl(AVL_Plant_Node_t *root) {   
     if (root == NULL) {
         return;
     }
-    free_usine_avl(root->left);
-    free_usine_avl(root->right);
+    free_plant_avl(root->left);
+    free_plant_avl(root->right);
     free(root);
 }
-AVL_Node_Usine_t *insert_usine(AVL_Node_Usine_t *node, const char *id_usine) {
+
+AVL_Plant_Node_t *insert_plant(AVL_Plant_Node_t *node, const char *plant_id) {
     if (node == NULL) {
-        return new_usine_node(id_usine);
+        return new_plant_node(plant_id);
     }
-    int cmp_result = strcmp(id_usine, node->id);
+    int cmp_result = strcmp(plant_id, node->id);
     if (cmp_result < 0) {
-        node->left = insert_usine(node->left, id_usine);
+        node->left = insert_plant(node->left, plant_id);
     } 
     else if (cmp_result > 0) {
-        node->right = insert_usine(node->right, id_usine);
+        node->right = insert_plant(node->right, plant_id);
     } 
     else {
         return node; 
     }
+    
     node->height = 1 + max(get_height(node->left), get_height(node->right));
     int balance = get_balance(node); 
+    
     if (balance < -1 && get_balance(node->left) <= 0) {
         return rotate_right(node);
     }
