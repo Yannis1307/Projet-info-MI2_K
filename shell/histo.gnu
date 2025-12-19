@@ -1,32 +1,31 @@
-# Fichier : shell/histo.gnu
+# File: shell/histo.gnu
 
-# 1. Configuration de la sortie
+#Output configuration
 set terminal png size 1200,800
 set output outputname
 
-# 2. Configuration des données
+#Data configuration
 set datafile separator ";"
 
-# 3. Configuration du graphique Histogramme
+#Histogram chart configuration
 set style data histograms
 set style fill solid 1.0 border -1
 set boxwidth 0.7 relative
 
-# 4. Grille et Axes
+#Grid and Axes
 set grid ytics linestyle 1 lc rgb "#bbbbbb" lw 1
-set ylabel "Volume (M.m³.an⁻¹)" font ",12"
-set xlabel "Identifiant Usine" font ",12"
+set ylabel "Volume (M.m³/year)" font ",12"
+set xlabel "Factory Identifier" font ",12"
 
-# Rotation des étiquettes (IDs) sur l'axe X 
+# Rotate labels (IDs) on X axis
 set xtics rotate by -45 scale 0 font ",8"
 
-# On ajuste les marges 
+# Adjust margins
 set bmargin 10
 
-# 5. Titre ,
-if (!exists("my_title")) my_title='Histogramme des Volumes'
+#Title
+if (!exists("my_title")) my_title='Volume Histogram'
 set title my_title
 
-# 6. Commande de traçage
-
+#Plotting command
 plot inputname every ::1 using 2:xtic(1) notitle linecolor rgb "#0060ad"
