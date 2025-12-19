@@ -1,5 +1,13 @@
 #include "../headers/avl_plant.h" 
+#include <stdlib.h>
+#include <string.h>
+#include <stdio.h>
 
+#ifndef max
+#define max(a,b) (((a) > (b)) ? (a) : (b))
+#endif
+
+//Utility Functions: Node creation and safe height retrieval
 int get_height(AVL_Plant_Node_t *node) {
     if (node == NULL)
         return 0;
@@ -23,6 +31,7 @@ AVL_Plant_Node_t *new_plant_node(char *plant_id) {
     return node;
 }
 
+// AVL Balancing Primitives: Balance factor calculation and rotations
 int get_balance(AVL_Plant_Node_t *node) {
     if (node == NULL){
     	return 0;
@@ -56,7 +65,8 @@ AVL_Plant_Node_t *rotate_left(AVL_Plant_Node_t *x) {
     return y;
 }
 
-AVL_Plant_Node_t *search_plant(AVL_Plant_Node_t *root,char *plant_id) {
+// Tree Operations: Recursive search and memory deallocation
+AVL_Plant_Node_t *search_plant(AVL_Plant_Node_t *root, char *plant_id) {
     if (root == NULL || strcmp(plant_id, root->id) == 0) {
         return root;
     }
@@ -77,7 +87,9 @@ void free_plant_avl(AVL_Plant_Node_t *root) {
     free(root);
 }
 
-AVL_Plant_Node_t *insert_plant(AVL_Plant_Node_t *node,char *plant_id) {
+// Insertion Logic: Recursive insertion with automatic rebalancing
+AVL_Plant_Node_t *insert_plant(AVL_Plant_Node_t *node, char *plant_id) {
+    //Standard BST Insertion
     if (node == NULL) {
         return new_plant_node(plant_id);
     }
@@ -89,25 +101,30 @@ AVL_Plant_Node_t *insert_plant(AVL_Plant_Node_t *node,char *plant_id) {
         node->right = insert_plant(node->right, plant_id);
     } 
     else {
-        return node; 
+        return node; //no duplicates allowed
     }
     
+    // 2. Height Update & Rebalancing
     node->height = 1 + max(get_height(node->left), get_height(node->right));
     int balance = get_balance(node); 
     
+    // Left Heavy
     if (balance < -1 && get_balance(node->left) <= 0) {
         return rotate_right(node);
     }
+    // Right Heavy
     if (balance > 1 && get_balance(node->right) >= 0) {
         return rotate_left(node);
     }
+    // Left-Right Case
     if (balance < -1 && get_balance(node->left) > 0) {
         node->left = rotate_left(node->left); 
-        return rotate_right(node);           
+        return rotate_right(node);            
     }
+    // Right-Left Case
     if (balance > 1 && get_balance(node->right) < 0) {
         node->right = rotate_right(node->right); 
-        return rotate_left(node);                
+        return rotate_left(node);                 
     }
     return node;
 }
