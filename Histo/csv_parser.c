@@ -1,6 +1,6 @@
 #include "../headers/csv_parser.h"
 
-int is_plant_prefix_valid(const char *id) {
+int is_plant_prefix_valid(char *id) {
     if (strstr(id, "Plant ") == id) return 1;
     if (strstr(id, "Module ") == id) return 1;
     if (strstr(id, "Unit ") == id) return 1;
@@ -8,14 +8,14 @@ int is_plant_prefix_valid(const char *id) {
     return 0;
 }
 
-float parse_float(const char *token) {
+float parse_float(char *token) {
     if (token == NULL || strcmp(token, "-") == 0) {
         return -1.0f; // value for missing
     }
     return (float)atof(token);
 }
 
-int parse_csv_line(const char *line, CSV_Section_t *section) {
+int parse_csv_line(char *line, CSV_Section_t *section) {
     char line_copy[MAX_LINE_LENGTH];
     char *token;
     int col_index = 0;
