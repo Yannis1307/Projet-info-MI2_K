@@ -1,27 +1,27 @@
 CC = gcc
 CFLAGS = -Wall -Wextra -g -Iheaders
 
+# Sources 
+SRCS = src/main.c histo/histo_handler.c histo/avl_plant.c histo/csv_parser.c leaks/leaks_handler.c
 
-SRCS = src/main.c Histo/histo_handler.c Histo/avl_usine.c Histo/csv_parser.c Leaks/leaks_handler.c
-
-# Transformation .c -> .o
+# Transform .c -> .o
 OBJS = $(SRCS:.c=.o)
 
-# Nom de l'exécutable 
+# Executable name
 EXEC = wildwater
 
-# Règle par défaut
+# Default rule
 all: $(EXEC)
 
-# Édition des liens
+# Linking
 $(EXEC): $(OBJS)
 	$(CC) $(CFLAGS) -o $@ $^
 
-# Compilation des fichiers objets
+# Compile object files
 %.o: %.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
-# Clean
+# Cleaning
 clean:
 	rm -f $(OBJS) $(EXEC) *.dat *.png
 
