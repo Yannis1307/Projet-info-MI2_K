@@ -5,6 +5,8 @@
 #include <math.h> 
 
 #define max(a, b) ((a > b) ? a : b)
+
+//STRING CLEANING
 void trim_string(char *str) {
     if (str == NULL) return;
     int len = strlen(str);
@@ -25,12 +27,14 @@ void trim_string(char *str) {
         str[i] = '\0';
     }
 }
-//Gestion avl
+
+// AVL MANAGEMENT
+
 Station_Node_t *new_station_node(const char *id) {
     Station_Node_t *node = (Station_Node_t *)malloc(sizeof(Station_Node_t));
     if (!node) {
-        fprintf(stderr, "\nErreur fatale : Plus de mémoire RAM disponible (malloc failed).\n");
-        exit(1); // Arrêt propre selon consigne [cite: 216]
+        fprintf(stderr, "\nFatal Error: Out of memory (malloc failed).\n");
+        exit(1); // Clean exit as per requirements
     }
     strncpy(node->id, id, MAX_ID_LEN - 1);
     node->id[MAX_ID_LEN - 1] = '\0';
@@ -41,6 +45,7 @@ Station_Node_t *new_station_node(const char *id) {
     node->height = 1;
     return node;
 }
+
 int get_station_height(Station_Node_t *n) { return (n == NULL) ? 0 : n->height; }
 int get_station_balance(Station_Node_t *n) { return (n == NULL) ? 0 : get_station_height(n->right) - get_station_height(n->left); }
 
@@ -119,7 +124,7 @@ void add_pipe(Station_Node_t *station, const char *dest_id, float leak) {
     if (station == NULL) return;
     AdjNode_t *new_adj = (AdjNode_t *)malloc(sizeof(AdjNode_t));
     if (!new_adj) {
-         fprintf(stderr, "\nErreur fatale : RAM saturée dans add_pipe.\n");
+         fprintf(stderr, "\nFatal Error: RAM saturated in add_pipe.\n");
          exit(1);
     }
     strncpy(new_adj->dest_id, dest_id, MAX_ID_LEN - 1);
@@ -128,14 +133,14 @@ void add_pipe(Station_Node_t *station, const char *dest_id, float leak) {
     station->adj_head = new_adj;
 }
 
-// CALCUL 
+//RECURSIVE CALCULATION
 
 double calculate_downstream_loss(Station_Node_t *root, Station_Node_t *current_node, double input_volume) {
     if (current_node == NULL || input_volume <= 0.0) return 0.0;
 
     double total_loss_here = 0.0;
     
-    //  Compter les enfants
+    //Count children
     int children_count = 0;
     AdjNode_t *curr = current_node->adj_head;
     while (curr) {
@@ -145,10 +150,10 @@ double calculate_downstream_loss(Station_Node_t *root, Station_Node_t *current_n
 
     if (children_count == 0) return 0.0;
 
-    // Répartition équitable 
+    //Fair split
     double volume_per_child = input_volume / (double)children_count;
 
-    // Parcours des enfants
+    //Traverse children
     curr = current_node->adj_head;
     while (curr) {
         double pipe_loss = 0.0;
@@ -167,11 +172,11 @@ double calculate_downstream_loss(Station_Node_t *root, Station_Node_t *current_n
     return total_loss_here;
 }
 
-// HANDLER 
+// MAIN HANDLER 
 
 int handle_leaks_data(const char *target_factory_id, const char *input_source) {
     FILE *file = (strcmp(input_source, "-") == 0) ? stdin : fopen(input_source, "r");
-    if (!file) { perror("Erreur ouverture fichier"); return 1; }
+    if (!file) { perror("Error opening file"); return 1; }
 
     char line[MAX_LINE_LENGTH];
     Station_Node_t *graph_root = NULL;
@@ -181,51 +186,49 @@ int handle_leaks_data(const char *target_factory_id, const char *input_source) {
     clean_target_id[MAX_ID_LEN-1] = '\0';
     trim_string(clean_target_id);
 
-    
     int line_count = 0; 
-    fprintf(stderr, "Chargement du réseau en mémoire...\n");
+    fprintf(stderr, "Loading network into memory...\n");
 
     while (fgets(line, MAX_LINE_LENGTH, file)) {
         
         line_count++;
         if (line_count % 200000 == 0) {
-            
-            fprintf(stderr, "\rLignes traitées : %d...", line_count);
+            fprintf(stderr, "\rLines processed: %d...", line_count);
         }
 
-        Troncon_CSV_t t;
-        if (parse_csv_line(line, &t) == 0) {
-            trim_string(t.usine_id);
-            trim_string(t.amont_id);
-            trim_string(t.aval_id);
+        CSV_Section_t s;
+        if (parse_csv_line(line, &s) == 0) {
+            trim_string(s.plant_id);
+            trim_string(s.upstream_id);
+            trim_string(s.downstream_id);
 
-           
-            if (t.volume_or_capacity > 0) {
-                if (t.type == TYPE_USINE) {
-                    graph_root = insert_station(graph_root, t.usine_id);
-                    Station_Node_t *s = search_station(graph_root, t.usine_id);
-                    if (s) s->capacity = (long long)t.volume_or_capacity;
+            // Source Management
+            if (s.volume_or_capacity > 0) {
+                if (s.type == TYPE_PLANT) {
+                    graph_root = insert_station(graph_root, s.plant_id);
+                    Station_Node_t *st = search_station(graph_root, s.plant_id);
+                    if (st) st->capacity = (long long)s.volume_or_capacity;
                 }
-                else if (strcmp(t.aval_id, clean_target_id) == 0) {
-                     graph_root = insert_station(graph_root, t.aval_id);
-                     Station_Node_t *s = search_station(graph_root, t.aval_id);
-                     if (s) s->capacity += (long long)t.volume_or_capacity;
+                else if (strcmp(s.downstream_id, clean_target_id) == 0) {
+                     graph_root = insert_station(graph_root, s.downstream_id);
+                     Station_Node_t *st = search_station(graph_root, s.downstream_id);
+                     if (st) st->capacity += (long long)s.volume_or_capacity;
                 }
             }
 
-            
-            if (t.amont_id[0] != '\0' && t.aval_id[0] != '\0') {
-                graph_root = insert_station(graph_root, t.amont_id);
-                Station_Node_t *src = search_station(graph_root, t.amont_id);
+            // Pipe Management
+            if (s.upstream_id[0] != '\0' && s.downstream_id[0] != '\0') {
+                graph_root = insert_station(graph_root, s.upstream_id);
+                Station_Node_t *src = search_station(graph_root, s.upstream_id);
                 if (src) {
-                    float leak = (t.leak_percentage < 0) ? 0.0f : t.leak_percentage;
-                    add_pipe(src, t.aval_id, leak);
+                    float leak = (s.leak_percentage < 0) ? 0.0f : s.leak_percentage;
+                    add_pipe(src, s.downstream_id, leak);
                 }
-                graph_root = insert_station(graph_root, t.aval_id);
+                graph_root = insert_station(graph_root, s.downstream_id);
             }
         }
     }
-    fprintf(stderr, "\nFin du chargement (%d lignes). Lancement du calcul...\n", line_count);
+    fprintf(stderr, "\nLoading finished (%d lines). Starting calculation...\n", line_count);
     if (file != stdin) fclose(file);
 
     Station_Node_t *target = search_station(graph_root, clean_target_id);
@@ -236,10 +239,10 @@ int handle_leaks_data(const char *target_factory_id, const char *input_source) {
         double initial_volume = (double)target->capacity;
         double total_loss = calculate_downstream_loss(graph_root, target, initial_volume);
         
+        // Result in M.m3
         printf("%.6f\n", total_loss / 1000000.0);
     }
 
-    // Libération de la mémoire 
     free_station_graph(graph_root);
     return 0;
 }
