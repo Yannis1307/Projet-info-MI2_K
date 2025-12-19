@@ -1,11 +1,9 @@
 #!/bin/bash
-
+#Starts the timer and ensures the C executable is present (compiles if needed).
 start_time=$(date +%s%N)
 executable="./wildwater"
 csv="$1"
 cmd="$2"
-
-# Compilation check
 if [ ! -x "$executable" ]; then
     echo "Compiling..."
     make
@@ -14,8 +12,7 @@ if [ ! -x "$executable" ]; then
         exit 1
     fi
 fi
-
-# Argument verification
+#Checks if enough arguments are provided and if the input file exists.
 if [ $# -lt 2 ]; then
     echo "Usage: $0 <csv_file> <command> [arguments]"
     exit 1
@@ -26,7 +23,7 @@ if [ ! -f "$csv" ]; then
     exit 1
 fi
 
-# HISTO 
+#Filters data, runs the C program, sorts output, and generates Gnuplot charts.
 if [ "$cmd" = "histo" ]; then
     if [ $# -ne 3 ]; then
         echo "Error: histo expects mode argument [max|src|real]."
@@ -36,7 +33,7 @@ if [ "$cmd" = "histo" ]; then
     
     echo "--- HISTOGRAM MODE: $mode ---"
     
-    # Filter lines where col 1 is "-"
+   #Filter data and execute C program
     awk -F";" '$1=="-" {print $0}' "$csv" | $executable "histo" "$mode" - > "histo_$mode.dat"
     
     if [ $? -ne 0 ]; then
@@ -44,21 +41,20 @@ if [ "$cmd" = "histo" ]; then
         exit 1
     fi
 
-    # Chart generation
+    #sorts results and generathe the graphs using Gnuplot
     if [ -f "shell/histo.gnu" ] && [ -s "histo_$mode.dat" ]; then
         echo "Generating charts..."
         
         head -n 1 "histo_$mode.dat" > header.tmp
         
-        # 50 smallest
+        #50 smallest
         cat header.tmp > "histo_${mode}_min50.dat"
         tail -n +2 "histo_$mode.dat" | sort -t";" -k2,2n | head -n 50 >> "histo_${mode}_min50.dat"
         
-        # 10 largest
+        #10 largest
         cat header.tmp > "histo_${mode}_max10.dat"
         tail -n +2 "histo_$mode.dat" | sort -t";" -k2,2nr | head -n 10 >> "histo_${mode}_max10.dat"
 
-        # Call Gnuplot
         gnuplot -e "inputname='histo_${mode}_min50.dat'; outputname='histo_${mode}_min50.png'; my_title='Histogram: 50 smallest factories ($mode)'" shell/histo.gnu
         gnuplot -e "inputname='histo_${mode}_max10.dat'; outputname='histo_${mode}_max10.png'; my_title='Histogram: 10 largest factories ($mode)'" shell/histo.gnu
         
@@ -67,7 +63,7 @@ if [ "$cmd" = "histo" ]; then
     fi
     echo "Histogram processing finished."
 
-#  LEAKS
+#Filters data for a specific factory, calculates leaks via C, and updates history.
 elif [ "$cmd" = "leaks" ]; then
     if [ $# -ne 3 ]; then
         echo "Error: leaks expects factory ID argument."
@@ -79,7 +75,7 @@ elif [ "$cmd" = "leaks" ]; then
 
     echo "--- LEAKS MODE: $facility ---"
     
-    # Filter for specific factory network 
+    #Filter specific station data and run calculation 
     awk -F";" -v id="$facility" '$1==id || $2==id || $3==id {print $0}' "$csv" | $executable "leaks" "$facility" - > "leaks_output.tmp"
 
     if [ $? -ne 0 ]; then
@@ -88,7 +84,7 @@ elif [ "$cmd" = "leaks" ]; then
         exit 1
     fi
 
-    # Result processing and history
+    #read result and update history file
     result=$(cat "leaks_output.tmp")
     rm -f "leaks_output.tmp"
 
@@ -108,7 +104,7 @@ else
     exit 1
 fi
 
-# Timing 
+#Calculate and print the total execution time.
 end_time=$(date +%s%N)
 duration=$(( (end_time - start_time) / 1000000 ))
 echo "Total duration: $duration ms"
