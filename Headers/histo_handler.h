@@ -1,11 +1,12 @@
-#ifndef LEAKS_HANDLER_H
-#define LEAKS_HANDLER_H
+#ifndef HISTO_HANDLER_H
+#define HISTO_HANDLER_H
 
 #include <stdio.h>
 #include <stdlib.h>
 #include "types.h"
+#include "avl_plant.h" 
 
-// Main entry point for the 'leaks' command logic
-int handle_leaks_data(const char *target_factory_id, const char *input_source);
+int handle_histo_data(const char *mode, const char *data_filename);
+int write_histo_results(AVL_Plant_Node_t *root, const char *mode);
 
 #endif
