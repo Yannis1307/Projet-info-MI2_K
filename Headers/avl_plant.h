@@ -11,7 +11,7 @@
 
 // Utility Functions: Memory management and node properties
 int get_height(AVL_Plant_Node_t *node);
-AVL_Plant_Node_t *new_plant_node(const char *plant_id);
+AVL_Plant_Node_t *new_plant_node(char *plant_id);
 int get_balance(AVL_Plant_Node_t *node);
 void free_plant_avl(AVL_Plant_Node_t *root); 
 
@@ -20,7 +20,7 @@ AVL_Plant_Node_t *rotate_right(AVL_Plant_Node_t *y);
 AVL_Plant_Node_t *rotate_left(AVL_Plant_Node_t *x);
 
 // Core Operations: Recursive search and insertion
-AVL_Plant_Node_t *search_plant(AVL_Plant_Node_t *root, const char *plant_id);
-AVL_Plant_Node_t *insert_plant(AVL_Plant_Node_t *node, const char *plant_id);
+AVL_Plant_Node_t *search_plant(AVL_Plant_Node_t *root, char *plant_id);
+AVL_Plant_Node_t *insert_plant(AVL_Plant_Node_t *node, char *plant_id);
 
 #endif
