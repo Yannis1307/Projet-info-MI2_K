@@ -6,6 +6,6 @@
 #include "types.h"
 
 // Main entry point for the 'leaks' command logic
-int handle_leaks_data(const char *target_factory_id, const char *input_source);
+int handle_leaks_data(char *target_factory_id,  char *input_source);
 
 #endif
