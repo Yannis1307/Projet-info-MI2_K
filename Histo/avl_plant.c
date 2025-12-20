@@ -101,10 +101,10 @@ AVL_Plant_Node_t *insert_plant(AVL_Plant_Node_t *node, char *plant_id) {
         node->right = insert_plant(node->right, plant_id);
     } 
     else {
-        return node; //no duplicates allowed
+        return node; 
     }
     
-    // 2. Height Update & Rebalancing
+    // Height Update & Rebalancing
     node->height = 1 + max(get_height(node->left), get_height(node->right));
     int balance = get_balance(node); 
     
