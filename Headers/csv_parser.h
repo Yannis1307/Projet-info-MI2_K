@@ -10,9 +10,9 @@
 #define FIELD_DELIMITER ";"
 
 // Helper: Safely converts string tokens to float
-float parse_float(const char *token);
+float parse_float(char *token);
 
 // Main Parsing: Extracts data from a raw CSV line into the standard structure
-int parse_csv_line(const char *line, CSV_Section_t *section);
+int parse_csv_line(char *line, CSV_Section_t *section);
 
 #endif
