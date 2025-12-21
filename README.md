@@ -5,9 +5,9 @@ WildWater-TECH est un programme en C conçu pour modéliser et analyser la perfo
 🚀 Comment l'exécuter
 
 Pour démarrer le programme, ouvrez un terminal de commande dans le dossier du projet :
-
-1. Compilation: Tapez `make` pour générer l'exécutable `wildwater`
-2. Lancement: Le programme est orchestré par un script Shell pour faciliter les filtres. Utilisez la commande:
+1. Ajouter le fichier wildwater.dat contenant toutes les données
+2. Compilation: Tapez `make` pour générer l'exécutable `wildwater`
+3. Lancement: Le programme est orchestré par un script Shell pour faciliter les filtres. Utilisez la commande:
 `./shell/myScript.sh <fichier_csv> <commande> [options]`
 
 🧩 Fonctionnalités du programme
